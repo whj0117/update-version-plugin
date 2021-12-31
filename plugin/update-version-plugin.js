@@ -40,6 +40,7 @@ class updateVersionPlugin {
             let versionLine = VersionArr.join('.')
             for (let i = 0; i < versionData.length; i++) {
                 if (this.options.name) {
+                    console.log('第一步')
                     // name不存在直接用version
                     if (JSON.parse(packageTxt).hasOwnProperty(`${this.options.name}`)) {
                         if (versionData[i].indexOf(`"${this.options.name}":`) != -1) {
@@ -47,7 +48,8 @@ class updateVersionPlugin {
                             break;
                         }
                     } else {
-                        if (versionData[i] === '{') {
+                        console.log('第二部', versionData)
+                        if (versionData[i].indexOf('{') !== -1) {
                             versionData.splice(i + 1, 0, `  "${this.options.name}": "${versionLine}",`);
                             break;
                         }

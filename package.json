@@ -1,6 +1,7 @@
 {
+  "versionName": "1.20211231.2",
   "name": "updateversionplugin",
-  "version": "1.20211231.37",
+  "version": "1.20211231.38",
   "description": "项目查看版本的插件",
   "main": "plugin/update-version-plugin.js",
   "scripts": {

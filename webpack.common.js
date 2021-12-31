@@ -9,7 +9,7 @@ module.exports = {
             template: './src/index.html'
         }),
         new updateVersionPlugin({
-            name: '',
+            name: 'versionName',
             isLog: true
         })
     ],
