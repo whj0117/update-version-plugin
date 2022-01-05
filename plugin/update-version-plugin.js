@@ -1,6 +1,6 @@
 const fs = require('fs')
 const chalk = require('chalk')
-const webpack = require('webpack')
+const DefinePlugin = require('webpack').DefinePlugin
 const MyPlugin = 'updateVersionPlugin'
 const AddZero = time => {
     return time.toString().padStart(2, '0')
@@ -38,33 +38,17 @@ class updateVersionPlugin {
                 VersionArr[2] = 1
             }
             let versionLine = VersionArr.join('.')
+            let name = this.options.name || 'version'
             for (let i = 0; i < versionData.length; i++) {
-                if (this.options.name) {
-                    console.log('第一步')
-                    // name不存在直接用version
-                    if (JSON.parse(packageTxt).hasOwnProperty(`${this.options.name}`)) {
-                        if (versionData[i].indexOf(`"${this.options.name}":`) != -1) {
-                            versionData.splice(i, 1, `  "${this.options.name}": "${versionLine}",`);
-                            break;
-                        }
-                    } else {
-                        console.log('第二部', versionData)
-                        if (versionData[i].indexOf('{') !== -1) {
-                            versionData.splice(i + 1, 0, `  "${this.options.name}": "${versionLine}",`);
-                            break;
-                        }
+                if (JSON.parse(packageTxt).hasOwnProperty(`${name}`)) {
+                    if (versionData[i].indexOf(`"${name}":`) != -1) {
+                        versionData.splice(i, 1, `  "${name}": "${versionLine}",`);
+                        break;
                     }
                 } else {
-                    if (JSON.parse(packageTxt).hasOwnProperty("version")) {
-                        if (versionData[i].indexOf('"version":') != -1) {
-                            versionData.splice(i, 1, '  "version": "' + versionLine + '",');
-                            break;
-                        }
-                    } else {
-                        if (versionData[i] === '{') {
-                            versionData.splice(i + 1, 0, `  "version": "${versionLine}",`);
-                            break;
-                        }
+                    if (versionData[i].indexOf('{') !== -1) {
+                        versionData.splice(i + 1, 0, `  "${name}": "${versionLine}",`);
+                        break;
                     }
                 }
             }
@@ -73,11 +57,11 @@ class updateVersionPlugin {
                 console.log(chalk.green.bold('更新版本号成功！当前最新版本号为：' + versionLine))
             }
             let plugins = compiler.options.plugins
-            plugins.push(new webpack.DefinePlugin({
+            plugins.push(new DefinePlugin({
                 UPDATEVERSIONNAME: JSON.stringify(this.options.name)
             }))
             compiler.hooks.compilation.tap(MyPlugin, (compilation, options) => {
-                compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('aaa', (htmlPluginData, cb) => {
+                compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync('changeHtmlPluginData', (htmlPluginData, cb) => {
                     let sVersion = require('../package.json').version
                     let sDomRelease = `<input type="hidden" id="release" value=${sVersion} />`
                     let head = htmlPluginData.html.indexOf('<body>') + 6
@@ -85,7 +69,6 @@ class updateVersionPlugin {
                     cb()
                 })
             })
-
         } catch (e) {
             if (this.options.isLog) {
                 console.log(chalk.red.bold('读取文件修改版本号出错:', e.toString()))
