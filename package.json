@@ -1,7 +1,7 @@
 {
-  "versionName": "1.20220105.16",
+  "versionName": "1.20220105.17",
   "name": "update-version-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "自动修改项目版本插件",
   "main": "plugin/update-version-plugin.js",
   "scripts": {
